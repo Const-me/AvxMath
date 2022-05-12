@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<!-- Microsoft was too lazy to include decent debug visualizer for hardware vectors in the Visual Studio.
+	Fortunately, easily fixable with this .natvis file, add it into your project to use. -->
+	<Type Name="__m256d">
+		<DisplayString>[ { m256d_f64[ 0 ],g }, { m256d_f64[ 1 ],g }, { m256d_f64[ 2 ],g }, { m256d_f64[ 3 ],g } ]</DisplayString>
+	</Type>
+	<Type Name="__m128">
+		<DisplayString>[ { m128_f32[ 0 ],g }, { m128_f32[ 1 ],g }, { m128_f32[ 2 ],g }, { m128_f32[ 3 ],g } ]</DisplayString>
+	</Type>
+	<Type Name="__m128d">
+		<DisplayString>[ { m128d_f64[ 0 ],g }, { m128d_f64[ 1 ],g } ]</DisplayString>
+	</Type>
+</AutoVisualizer>
