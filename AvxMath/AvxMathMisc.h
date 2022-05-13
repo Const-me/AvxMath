@@ -58,6 +58,12 @@ namespace AvxMath
 		return (bool)_mm256_testz_pd( cmp, cmp );
 	}
 
+	// Broadcast a scalar while loading; the broadcasting is free in this case, BTW.
+	inline __m256d broadcast( const double& v )
+	{
+		return _mm256_broadcast_sd( &v );
+	}
+
 	inline double vectorGetX( __m256d vec )
 	{
 		return _mm256_cvtsd_f64( vec );
@@ -151,4 +157,7 @@ namespace AvxMath
 	}
 
 	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
+
+	// An approximation of hyperbolic tangent
+	__m256d _AM_CALL_ vectorTanH( __m256d vec );
 }
