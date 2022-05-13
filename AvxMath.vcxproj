@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AvxMath.cpp" />
+    <ClCompile Include="AvxMath\AvxMathMisc.cpp" />
     <ClCompile Include="testDx.cpp" />
   </ItemGroup>
   <ItemGroup>

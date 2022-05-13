@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="AvxMath.cpp" />
     <ClCompile Include="testDx.cpp" />
+    <ClCompile Include="AvxMath\AvxMathMisc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AvxMath\AvxMath.h" />

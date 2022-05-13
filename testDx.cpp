@@ -1,6 +1,18 @@
 #include "testDx.h"
 #include "AvxMath/AvxMath.h"
 #include <DirectXMath.h>
+#include <cmath>
+
+static void assertEqual( __m256d a, __m256d b )
+{
+	__m256d diff = _mm256_sub_pd( a, b );
+	using namespace AvxMath;
+	diff = vectorAbs( diff );
+	constexpr double tolerance = 1E-6;
+	if( vector4InBounds( diff, _mm256_set1_pd( tolerance ) ) )
+		return;
+	__debugbreak();
+}
 
 struct Vec
 {
@@ -17,20 +29,33 @@ struct Vec
 	}
 	Vec() = default;
 
-	void assertEqual()
+	void assertEqual() const
 	{
-		__m256d ref = _mm256_cvtps_pd( sse );
-		__m256d diff = _mm256_sub_pd( ref, avx );
-		using namespace AvxMath;
-		diff = vectorAbs( diff );
-
-		constexpr double tolerance = 1E-6;
-		if( vector4InBounds( diff, _mm256_set1_pd( tolerance ) ) )
-			return;
-
-		__debugbreak();
+		::assertEqual( _mm256_cvtps_pd( sse ), avx );
 	}
 };
+
+inline __m256d stdSin( __m256d v )
+{
+	using namespace AvxMath;
+	return _mm256_setr_pd(
+		std::sin( vectorGetX( v ) ),
+		std::sin( vectorGetY( v ) ),
+		std::sin( vectorGetZ( v ) ),
+		std::sin( vectorGetW( v ) )
+	);
+}
+
+inline __m256d stdCos( __m256d v )
+{
+	using namespace AvxMath;
+	return _mm256_setr_pd(
+		std::cos( vectorGetX( v ) ),
+		std::cos( vectorGetY( v ) ),
+		std::cos( vectorGetZ( v ) ),
+		std::cos( vectorGetW( v ) )
+	);
+}
 
 bool testDx()
 {
@@ -55,6 +80,22 @@ bool testDx()
 
 	test.sse = XMVector3Cross( a, b );
 	test.avx = vector3Cross( a, b );
+	test.assertEqual();
+
+	test.sse = ( a );
+	test.avx = quaternionRollPitchYaw( a );
+
+	Vec test2;
+	XMVectorSinCos( &test.sse, &test2.sse, a );
+	vectorSinCos( test.avx, test2.avx, a );
+	test.assertEqual();
+	test2.assertEqual();
+
+	assertEqual( test.avx, stdSin( a ) );
+	assertEqual( test2.avx, stdCos( a ) );
+
+	test.sse = XMQuaternionRotationRollPitchYawFromVector( a );
+	test.avx = quaternionRollPitchYaw( a );
 	test.assertEqual();
 
 	return true;

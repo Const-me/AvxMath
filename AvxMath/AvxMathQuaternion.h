@@ -55,4 +55,6 @@ namespace AvxMath
 
 		return res;
 	}
+
+	__m256d quaternionRollPitchYaw( __m256d angles );
 }

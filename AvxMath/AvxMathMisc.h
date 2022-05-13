@@ -37,6 +37,15 @@ namespace AvxMath
 		return _mm256_max_pd( vec, vectorNegate( vec ) );
 	}
 
+	inline __m256d vectorMultiplyAdd( __m256d a, __m256d b, __m256d c )
+	{
+#if _AM_FMA3_INTRINSICS_
+		return _mm256_fmadd_pd( a, b, c );
+#else
+		return _mm256_add_pd( _mm256_mul_pd( a, b ), c );
+#endif
+	}
+
 	// Tests whether the components of a 4D vector are within set bounds, i.e. -bounds <= vec <= bounds
 	inline bool vector4InBounds( __m256d vec, __m256d bounds )
 	{
@@ -134,4 +143,6 @@ namespace AvxMath
 			mat.r3 = vectorSplatW( vec );
 		}
 	}
-	}
+
+	void vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
+}
