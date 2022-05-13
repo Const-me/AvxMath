@@ -121,10 +121,16 @@ namespace AvxMath
 #endif
 	}
 
-	__declspec( selectany ) extern double infinity = std::numeric_limits<double>::infinity();
-	__declspec( selectany ) extern double quietNaN = std::numeric_limits<double>::quiet_NaN();
-	__declspec( selectany ) extern double one = 1;
-	__declspec( selectany ) extern __m256d g_flipXyz = _mm256_setr_pd( -0.0, -0.0, -0.0, 0 );
+	extern const struct sMiscConstants
+	{
+		const double negativeZero = -0.0f;
+		const double one = 1;
+		const double negativeOne = -1;
+		const double oneHalf = 0.5;
+		const double infinity = std::numeric_limits<double>::infinity();
+		const double quietNaN = std::numeric_limits<double>::quiet_NaN();
+	}
+	g_misc;
 
 #ifndef _MSC_VER
 	inline __m128i _mm_loadu_si32( const void* p )
@@ -144,5 +150,5 @@ namespace AvxMath
 		}
 	}
 
-	void vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
+	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
 }

@@ -55,13 +55,13 @@ namespace AvxMath
 		__m128d lsq = vector2LengthSq( v );
 		// Assuming zero-length or infinite vectors are rare and the following branches are both well-predicted
 		double s = _mm_cvtsd_f64( lsq );
-		if( s != infinity )
+		if( s != g_misc.infinity )
 		{
 			if( s > 0 )
 				return _mm_div_pd( v, _mm_sqrt_pd( lsq ) );
 			return _mm_setzero_pd();
 		}
-		return _mm_loaddup_pd( &quietNaN );
+		return _mm_loaddup_pd( &g_misc.quietNaN );
 	}
 
 	// ==== 3D vectors ====
@@ -96,7 +96,7 @@ namespace AvxMath
 
 		// Assuming zero-length or infinite vectors are rare and the following branches are both well-predicted
 		double s = _mm_cvtsd_f64( lsq );
-		if( s != infinity )
+		if( s != g_misc.infinity )
 		{
 			if( s > 0 )
 			{
@@ -111,7 +111,7 @@ namespace AvxMath
 			}
 			return _mm256_setzero_pd();
 		}
-		return _mm256_broadcast_sd( &quietNaN );
+		return _mm256_broadcast_sd( &g_misc.quietNaN );
 	}
 
 	// Compute cross product between two 3D vectors
@@ -161,7 +161,7 @@ namespace AvxMath
 	// Convert Cartesian vector to homogeneous, i.e. set W to 1.0
 	inline __m256d vector3Homogeneous( __m256d vec )
 	{
-		__m256d bc = _mm256_broadcast_sd( &one );
+		__m256d bc = _mm256_broadcast_sd( &g_misc.one );
 		return _mm256_blend_pd( vec, bc, 0b1000 );
 	}
 
@@ -174,7 +174,7 @@ namespace AvxMath
 		lsq = _mm_add_pd( lsq, _mm_permute_pd( lsq, _MM_SHUFFLE2( 0, 1 ) ) );
 
 		double s = _mm_cvtsd_f64( lsq );
-		if( s != infinity )
+		if( s != g_misc.infinity )
 		{
 			if( s > 0 )
 			{
@@ -189,6 +189,6 @@ namespace AvxMath
 			}
 			return _mm256_setzero_pd();
 		}
-		return _mm256_broadcast_sd( &quietNaN );
+		return _mm256_broadcast_sd( &g_misc.quietNaN );
 	}
 }

@@ -3,6 +3,8 @@
 
 namespace AvxMath
 {
+	const struct sMiscConstants g_misc;
+
 	constexpr double g_pi = 3.141592653589793238;
 
 	alignas( 32 ) static const struct
@@ -31,15 +33,6 @@ namespace AvxMath
 		return _mm256_sub_pd( a, v );
 	}
 
-	static const struct
-	{
-		const double negativeZero = -0.0f;
-		const double one = 1;
-		const double negativeOne = -1;
-		const double oneHalf = 0.5;
-	}
-	g_miscConstants;
-
 	static const std::array<double, 5> g_sinCoefficients
 	{
 		// g_XMSinCoefficients0
@@ -55,13 +48,13 @@ namespace AvxMath
 		-2.6051615e-07
 	};
 
-	void vectorSinCos( __m256d& sin, __m256d& cos, __m256d x )
+	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d x )
 	{
 		// Force the value within the bounds of pi
 		x = vectorModAngles( x );
 
-		const __m256d one = broadcast( g_miscConstants.one );
-		const __m256d neg0 = broadcast( g_miscConstants.negativeZero );
+		const __m256d one = broadcast( g_misc.one );
+		const __m256d neg0 = broadcast( g_misc.negativeZero );
 
 		// Map in [-pi/2,pi/2] with sin(y) = sin(x), cos(y) = sign*cos(x).
 		__m256d sign = _mm256_and_pd( x, neg0 );
@@ -121,9 +114,9 @@ namespace AvxMath
 		cos = Result;
 	}
 
-	__m256d quaternionRollPitchYaw( __m256d angles )
+	__m256d _AM_CALL_ quaternionRollPitchYaw( __m256d angles )
 	{
-		__m256d HalfAngles = _mm256_mul_pd( angles, broadcast( g_miscConstants.oneHalf ) );
+		__m256d HalfAngles = _mm256_mul_pd( angles, broadcast( g_misc.oneHalf ) );
 
 		__m256d SinAngles, CosAngles;
 		vectorSinCos( SinAngles, CosAngles, HalfAngles );

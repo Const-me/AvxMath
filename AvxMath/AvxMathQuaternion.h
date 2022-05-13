@@ -9,7 +9,8 @@ namespace AvxMath
 
 	inline __m256d quaternionConjugate( __m256d q )
 	{
-		return _mm256_xor_pd( q, g_flipXyz );
+		__m256d neg = vectorNegate( q );
+		return _mm256_blend_pd( neg, q, 0b1000 );
 	}
 
 	// Product of two quaternions
@@ -56,5 +57,5 @@ namespace AvxMath
 		return res;
 	}
 
-	__m256d quaternionRollPitchYaw( __m256d angles );
+	__m256d _AM_CALL_ quaternionRollPitchYaw( __m256d angles );
 }

@@ -8,6 +8,12 @@
 #define _AM_FMA3_INTRINSICS_ 1
 #endif
 
+#ifdef _MSC_VER
+#define _AM_CALL_  __vectorcall
+#else
+#define _AM_CALL_
+#endif
+
 #include <immintrin.h>
 #include <stdint.h>
 #include <assert.h>
