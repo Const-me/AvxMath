@@ -192,6 +192,8 @@ namespace AvxMath
 		}
 	}
 
+	// Absolute errors for sin/cos, compared to standard library of VC++, are within 1.8E-08, i.e. these are reasonably accurate approximations, despite way faster.
+
 	// Compute both sine and cosine of 4 angles in radian
 	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
 

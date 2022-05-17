@@ -40,6 +40,12 @@ static void computeSinCosError()
 		__m128d my = scalarSinCos( i );
 		__m128d std = stdSinCos( i );
 
+		// Just in case, verify the sin/cos are in [ -1 .. +1 ] range - we don't want 1.0 + 1E-12 despite the 1E-12 is very small error
+		__m128d a = vectorAbs( my );
+		if( vectorGetX( a ) > 1 || vectorGetY( a ) > 1 )
+			__debugbreak();
+
+		// Accumulate maximum absolute error
 		__m128d diff = _mm_sub_pd( my, std );
 		diff = vectorAbs( diff );
 		errors = _mm_max_pd( errors, diff );
