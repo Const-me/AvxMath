@@ -39,6 +39,7 @@ namespace AvxMath
 	// Merged and interleaved magic numbers from g_XMCosCoefficients0, g_XMSinCoefficients0, g_XMCosCoefficients1, and g_XMSinCoefficients1 vectors
 	// The X lanes correspond to cosine, Y lanes to sine.
 	// This way scalarSinCos function can use memory operands for optimal performance.
+	// The rest of the functions which use these numbers are loading scalars, RAM layout doesn't matter much.
 	static const std::array<__m128d, 5> g_cosSinCoefficients
 	{
 		_mm_setr_pd( -0.5,           -0.16666667 ),
@@ -65,7 +66,7 @@ namespace AvxMath
 		x = _mm256_blendv_pd( rflx, x, comp );
 		sign = _mm256_andnot_pd( comp, neg0 );
 
-		__m256d x2 = _mm256_mul_pd( x, x );
+		const __m256d x2 = _mm256_mul_pd( x, x );
 
 		const double* const coeffs = (const double*)g_cosSinCoefficients.data();
 		// Compute polynomial approximation of sine
@@ -132,7 +133,7 @@ namespace AvxMath
 		x = _mm_blendv_pd( rflx, x, comp );
 		sign = _mm_andnot_pd( comp, neg0 );
 
-		__m128d x2 = _mm_mul_pd( x, x );
+		const __m128d x2 = _mm_mul_pd( x, x );
 
 		const __m128d* const coeffs = g_cosSinCoefficients.data();
 
@@ -219,7 +220,7 @@ namespace AvxMath
 
 		const double* const coeffs = (const double*)g_cosSinCoefficients.data();
 
-		// Compute polynomial approximation of sine
+		// Compute polynomial approximation of cosine
 		double res = x2 * coeffs[ 8 ];
 
 		res += coeffs[ 6 ];
