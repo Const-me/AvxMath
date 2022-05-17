@@ -5,8 +5,6 @@ namespace AvxMath
 {
 	const struct sMiscConstants g_misc;
 
-	constexpr double g_pi = 3.141592653589793238;
-
 	alignas( 32 ) static const struct
 	{
 		const double pi = g_pi;

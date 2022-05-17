@@ -151,6 +151,7 @@
     <ClCompile Include="AvxMath\AvxMathMisc.cpp" />
     <ClCompile Include="AvxMath\AvxMathQuaternion.cpp" />
     <ClCompile Include="testDx.cpp" />
+    <ClCompile Include="testStdlib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AvxMath\AvxMath.h" />
@@ -160,6 +161,8 @@
     <ClInclude Include="AvxMath\AvxMathQuaternion.h" />
     <ClInclude Include="AvxMath\AvxMathVector.h" />
     <ClInclude Include="testDx.h" />
+    <ClInclude Include="testsMisc.h" />
+    <ClInclude Include="testStdlib.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="AvxMath\NatvisFile.natvis" />

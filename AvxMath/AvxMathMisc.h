@@ -30,6 +30,10 @@ namespace AvxMath
 	{
 		return _mm256_sub_pd( _mm256_setzero_pd(), vec );
 	}
+	inline __m128d vectorNegate( __m128d vec )
+	{
+		return _mm_sub_pd( _mm_setzero_pd(), vec );
+	}
 
 	// Selectively negate some lanes in the vector
 	template<int mask>
@@ -48,6 +52,10 @@ namespace AvxMath
 	inline __m256d vectorAbs( __m256d vec )
 	{
 		return _mm256_max_pd( vec, vectorNegate( vec ) );
+	}
+	inline __m128d vectorAbs( __m128d vec )
+	{
+		return _mm_max_pd( vec, vectorNegate( vec ) );
 	}
 
 	inline __m256d vectorMultiplyAdd( __m256d a, __m256d b, __m256d c )
@@ -81,6 +89,15 @@ namespace AvxMath
 	inline __m128d broadcast2( const double& v )
 	{
 		return _mm_load1_pd( &v );
+	}
+
+	inline double vectorGetX( __m128d vec )
+	{
+		return _mm_cvtsd_f64( vec );
+	}
+	inline double vectorGetY( __m128d vec )
+	{
+		return _mm_cvtsd_f64( _mm_permute_pd( vec, 0b11 ) );
 	}
 
 	inline double vectorGetX( __m256d vec )
@@ -210,4 +227,6 @@ namespace AvxMath
 		v = _mm_round_sd( v, v, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC );
 		return _mm_cvtsd_si32( v );
 	}
+
+	constexpr double g_pi = 3.141592653589793238;
 }
