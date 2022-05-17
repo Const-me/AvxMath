@@ -158,10 +158,10 @@ namespace AvxMath
 		return _mm256_div_pd( vec, vectorSplatW( vec ) );
 	}
 
-	// Convert Cartesian vector to homogeneous, i.e. set W to 1.0
+	// Convert Cartesian vector to homogeneous, i.e. reset W to 1.0
 	inline __m256d vector3Homogeneous( __m256d vec )
 	{
-		__m256d bc = _mm256_broadcast_sd( &g_misc.one );
+		__m256d bc = broadcast( g_misc.one );
 		return _mm256_blend_pd( vec, bc, 0b1000 );
 	}
 
@@ -189,6 +189,6 @@ namespace AvxMath
 			}
 			return _mm256_setzero_pd();
 		}
-		return _mm256_broadcast_sd( &g_misc.quietNaN );
+		return broadcast( g_misc.quietNaN );
 	}
 }

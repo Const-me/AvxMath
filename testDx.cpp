@@ -118,5 +118,9 @@ bool testDx()
 	test2.avx = quaternionMultiply( test.avx, test.avx );
 	test2.assertEqual();
 
+	test.sse = XMQuaternionRotationAxis( a, 13 );
+	test.avx = quaternionRotationAxis( a, 13 );
+	test.assertEqual();
+
 	return true;
 }
