@@ -9,7 +9,8 @@
 #endif
 
 #ifdef _MSC_VER
-#define _AM_CALL_  __vectorcall
+// #define _AM_CALL_  __vectorcall
+#define _AM_CALL_
 #else
 #define _AM_CALL_
 #endif

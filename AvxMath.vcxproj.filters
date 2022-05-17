@@ -4,6 +4,7 @@
     <ClCompile Include="AvxMath.cpp" />
     <ClCompile Include="testDx.cpp" />
     <ClCompile Include="AvxMath\AvxMathMisc.cpp" />
+    <ClCompile Include="AvxMath\AvxMathQuaternion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AvxMath\AvxMath.h" />

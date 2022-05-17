@@ -10,7 +10,7 @@ namespace AvxMath
 		__m128d high = high2( p );
 
 		low = _mm_add_pd( low, high );	// [ z + x, y + w ]
-		low = _mm_add_pd( low, _mm_permute_pd( low, _MM_SHUFFLE2( 0, 1 ) ) ); // z + x + y + w in both lanes
+		low = _mm_add_pd( low, _mm_permute_pd( low, 0b01 ) ); // z + x + y + w in both lanes
 		return low;
 	}
 

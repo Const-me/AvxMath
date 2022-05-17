@@ -14,6 +14,11 @@ static void assertEqual( __m256d a, __m256d b )
 	__debugbreak();
 }
 
+static void assertEqual( __m128d a, __m128d b )
+{
+	assertEqual( _mm256_setr_m128d( a, a ), _mm256_setr_m128d( b, b ) );
+}
+
 struct Vec
 {
 	__m128 sse;
@@ -57,6 +62,11 @@ inline __m256d stdCos( __m256d v )
 	);
 }
 
+inline __m128d stdSinCos( double a )
+{
+	return _mm_setr_pd( std::cos( a ), std::sin( a ) );
+}
+
 bool testDx()
 {
 	const Vec a{ 1, 2, 3, 4 };
@@ -82,9 +92,6 @@ bool testDx()
 	test.avx = vector3Cross( a, b );
 	test.assertEqual();
 
-	test.sse = ( a );
-	test.avx = quaternionRollPitchYaw( a );
-
 	Vec test2;
 	XMVectorSinCos( &test.sse, &test2.sse, a );
 	vectorSinCos( test.avx, test2.avx, a );
@@ -94,9 +101,22 @@ bool testDx()
 	assertEqual( test.avx, stdSin( a ) );
 	assertEqual( test2.avx, stdCos( a ) );
 
+	for( int i = -4; i <= 4; i++ )
+	{
+		__m128d my = scalarSinCos( i );
+		__m128d std = stdSinCos( i );
+		__m128d my2 = _mm_setr_pd( scalarCos( i ), scalarSin( i ) );
+		assertEqual( std, my );
+		assertEqual( std, my2 );
+	}
+
 	test.sse = XMQuaternionRotationRollPitchYawFromVector( a );
 	test.avx = quaternionRollPitchYaw( a );
 	test.assertEqual();
+
+	test2.sse = XMQuaternionMultiply( test.sse, test.sse );
+	test2.avx = quaternionMultiply( test.avx, test.avx );
+	test2.assertEqual();
 
 	return true;
 }

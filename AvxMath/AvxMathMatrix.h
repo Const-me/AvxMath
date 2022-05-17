@@ -12,7 +12,7 @@ namespace AvxMath
 		__m256d d = _mm256_mul_pd( vec, mat.r3 );
 
 		// Add even/odd lanes duplicating the values
-		constexpr int flip = _MM_SHUFFLE2( 0, 1 );
+		constexpr int flip = 0b0101;
 		a = _mm256_add_pd( a, _mm256_permute_pd( a, flip ) );
 		b = _mm256_add_pd( b, _mm256_permute_pd( b, flip ) );
 		c = _mm256_add_pd( c, _mm256_permute_pd( c, flip ) );

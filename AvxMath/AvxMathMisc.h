@@ -31,6 +31,19 @@ namespace AvxMath
 		return _mm256_sub_pd( _mm256_setzero_pd(), vec );
 	}
 
+	// Selectively negate some lanes in the vector
+	template<int mask>
+	inline __m256d vectorNegateLanes( __m256d vec )
+	{
+		static_assert( mask >= 0 && mask <= 0b1111, "The lanes mask should be in [ 0b0000 - 0b1111 ] range" );
+		if constexpr( 0 == mask )
+			return vec;
+		__m256d neg = vectorNegate( vec );
+		if constexpr( 0b1111 == mask )
+			return neg;
+		return _mm256_blend_pd( vec, neg, mask );
+	}
+
 	// abs( vec )
 	inline __m256d vectorAbs( __m256d vec )
 	{
@@ -58,10 +71,16 @@ namespace AvxMath
 		return (bool)_mm256_testz_pd( cmp, cmp );
 	}
 
-	// Broadcast a scalar while loading; the broadcasting is free in this case, BTW.
+	// Load a scalar, broadcast to 4 lanes; the broadcasting is free.
 	inline __m256d broadcast( const double& v )
 	{
 		return _mm256_broadcast_sd( &v );
+	}
+
+	// Load a scalar, broadcast to 2 lanes; the broadcasting is free.
+	inline __m128d broadcast2( const double& v )
+	{
+		return _mm_load1_pd( &v );
 	}
 
 	inline double vectorGetX( __m256d vec )
@@ -70,7 +89,7 @@ namespace AvxMath
 	}
 	inline double vectorGetY( __m256d vec )
 	{
-		return _mm_cvtsd_f64( _mm_permute_pd( low2( vec ), _MM_SHUFFLE2( 1, 1 ) ) );
+		return _mm_cvtsd_f64( _mm_permute_pd( low2( vec ), 0b11 ) );
 	}
 	inline double vectorGetZ( __m256d vec )
 	{
@@ -79,7 +98,7 @@ namespace AvxMath
 	inline double vectorGetW( __m256d vec )
 	{
 		__m128d high = high2( vec );
-		high = _mm_permute_pd( high, _MM_SHUFFLE2( 1, 1 ) );
+		high = _mm_permute_pd( high, 0b11 );
 		return _mm_cvtsd_f64( high );
 	}
 
@@ -89,7 +108,7 @@ namespace AvxMath
 #if _AM_AVX2_INTRINSICS_
 		return _mm256_broadcastsd_pd( low );
 #else
-		low = _mm_permute_pd( low, _MM_SHUFFLE2( 0, 0 ) );
+		low = _mm_permute_pd( low, 0b00 );
 		return _mm256_setr_m128d( low, low );
 #endif
 	}
@@ -97,7 +116,7 @@ namespace AvxMath
 	inline __m256d vectorSplatY( __m256d vec )
 	{
 		__m128d low = low2( vec );
-		low = _mm_permute_pd( low, _MM_SHUFFLE2( 1, 1 ) );
+		low = _mm_permute_pd( low, 0b11 );
 #if _AM_AVX2_INTRINSICS_
 		return _mm256_broadcastsd_pd( low );
 #else
@@ -111,7 +130,7 @@ namespace AvxMath
 		return _mm256_permute4x64_pd( vec, _MM_SHUFFLE( 2, 2, 2, 2 ) );
 #else
 		__m128d high = high2( vec );
-		high = _mm_permute_pd( high, _MM_SHUFFLE2( 0, 0 ) );
+		high = _mm_permute_pd( high, 0b00 );
 		return _mm256_setr_m128d( high, high );
 #endif
 	}
@@ -122,7 +141,7 @@ namespace AvxMath
 		return _mm256_permute4x64_pd( vec, _MM_SHUFFLE( 3, 3, 3, 3 ) );
 #else
 		__m128d high = high2( vec );
-		high = _mm_permute_pd( high, _MM_SHUFFLE2( 1, 1 ) );
+		high = _mm_permute_pd( high, 0b11 );
 		return _mm256_setr_m128d( high, high );
 #endif
 	}
@@ -156,8 +175,39 @@ namespace AvxMath
 		}
 	}
 
+	// Compute both sine and cosine of 4 angles in radian
 	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
+
+	// Compute both sine and cosine of the angle, return a vector with [ cos, sin ] values
+	__m128d scalarSinCos( double a );
+
+	double scalarSin( double a );
+	double scalarCos( double a );
 
 	// An approximation of hyperbolic tangent
 	__m256d _AM_CALL_ vectorTanH( __m256d vec );
+
+	// Round number to nearest integer without function calls
+	inline double round( double a )
+	{
+		__m128d v = _mm_set_sd( a );
+		v = _mm_round_sd( v, v, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC );
+		return _mm_cvtsd_f64( v );
+	}
+
+	// Round number to nearest integer, return int64 value
+	inline int64_t lround( double a )
+	{
+		__m128d v = _mm_set_sd( a );
+		v = _mm_round_sd( v, v, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC );
+		return _mm_cvtsd_si64( v );
+	}
+
+	// Round number to nearest integer, return int32 value
+	inline int iround( double a )
+	{
+		__m128d v = _mm_set_sd( a );
+		v = _mm_round_sd( v, v, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC );
+		return _mm_cvtsd_si32( v );
+	}
 }
