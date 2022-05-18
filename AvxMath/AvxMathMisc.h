@@ -203,6 +203,9 @@ namespace AvxMath
 	double scalarSin( double a );
 	double scalarCos( double a );
 
+	__m256d _AM_CALL_ vectorTan( __m256d a );
+	__m256d _AM_CALL_ vectorCot( __m256d a );
+
 	// An approximation of hyperbolic tangent
 	__m256d _AM_CALL_ vectorTanH( __m256d vec );
 

@@ -132,9 +132,9 @@ namespace AvxMath
 		sign = _mm_andnot_pd( comp, neg0 );
 
 		const __m128d x2 = _mm_mul_pd( x, x );
-
 		const __m128d* const coeffs = g_cosSinCoefficients.data();
 
+		// Compute both polynomials using 2 lanes of the SSE vector
 		__m128d vec = _mm_mul_pd( x2, coeffs[ 4 ] );
 
 		vec = _mm_add_pd( vec, coeffs[ 3 ] );
@@ -150,7 +150,7 @@ namespace AvxMath
 		vec = _mm_mul_pd( vec, x2 );
 		vec = _mm_add_pd( vec, one );
 
-		// For sine, multiply by X; for cos, multiply by the sign
+		// For sine, multiply by X; for cosine, multiply by the sign
 		__m128d mul = _mm_or_pd( one, sign );
 		mul = _mm_blend_pd( mul, x, 0b10 );
 		return _mm_mul_pd( vec, mul );
@@ -237,6 +237,61 @@ namespace AvxMath
 		__m128d tmp = _mm_set_sd( res );
 		tmp = _mm_or_pd( tmp, sign );
 		return _mm_cvtsd_f64( tmp );
+	}
+
+	static const struct
+	{
+		const double invPi = 1.0 / g_pi;
+		const double mul0 = -424539.12324285670928;  // -135135 * Pi
+		const double div0 = -135135;                 // -135135
+		const double mul2 = 537183.74348619438457;   // 62370 * Pi^2
+		const double div2 = 615567.22649594329707;   // 62370 * Pi^2
+		const double mul4 = -115675.44084883638934;  // -378 * Pi^5
+		const double div4 = -306838.63675710767731;  // -3150 * Pi^4
+		const double mul6 = 3020.2932277767920678;   // Pi^7
+		const double div6 = 26918.897420108524239;   // 28 * Pi^6
+	}
+	g_TanConstants;
+
+	__m256d _AM_CALL_ vectorTan( __m256d a )
+	{
+		// Wrap into [ -pi/2 .. +pi/2 ] interval.
+		// Don't multiply back, we include that multiplier in the magic numbers.
+		a = _mm256_mul_pd( a, broadcast( g_TanConstants.invPi ) );
+		__m256d tmp = _mm256_round_pd( a, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC );
+		a = _mm256_sub_pd( a, tmp );
+
+		// Because the source value is in [ -0.5 .. 0.5 ] as opposed to (-pi/2 .. +pi/2), we're sure x^6 << x^4 << x^2.
+		// For optimal numerical precision, starting to compute these polynomials with smaller numbers.
+
+		const __m256d x2 = _mm256_mul_pd( a, a );
+		const __m256d x4 = _mm256_mul_pd( x2, x2 );
+		const __m256d x6 = _mm256_mul_pd( x4, x2 );
+
+		__m256d mul = broadcast( g_TanConstants.mul6 );
+		__m256d div = broadcast( g_TanConstants.div6 );
+		mul = _mm256_mul_pd( mul, x6 );
+		div = _mm256_mul_pd( mul, x6 );
+
+		mul = vectorMultiplyAdd( broadcast( g_TanConstants.mul4 ), x4, mul );	// 1 + a1*x^2 + a2*x^4
+		div = vectorMultiplyAdd( broadcast( g_TanConstants.div4 ), x4, div );	// 1 + b1*x^2 + b2*x^4
+
+		mul = vectorMultiplyAdd( broadcast( g_TanConstants.mul2 ), x2, mul );	// 1 + mul2*x^2
+		div = vectorMultiplyAdd( broadcast( g_TanConstants.div2 ), x2, div );	// 1 + div2*x^2
+
+		mul = _mm256_add_pd( mul, broadcast( g_TanConstants.mul0 ) );
+		div = _mm256_add_pd( div, broadcast( g_TanConstants.div0 ) );
+
+		mul = _mm256_mul_pd( mul, a );
+		return _mm256_div_pd( mul, div );
+	}
+
+	__m256d _AM_CALL_ vectorCot( __m256d a )
+	{
+		// cot( a ) = tan( Pi/2 - a )
+		// https://en.wikipedia.org/wiki/List_of_trigonometric_identities#Reflections
+		a = _mm256_sub_pd( broadcast( g_piConstants.halfPi ), a );
+		return vectorTan( a );
 	}
 
 	static const struct TanhConstants
