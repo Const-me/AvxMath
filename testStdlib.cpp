@@ -34,6 +34,17 @@ inline __m256d stdTan( __m256d v )
 	);
 }
 
+inline __m256d testScalarTan( __m256d v )
+{
+	using namespace AvxMath;
+	return _mm256_setr_pd(
+		scalarTan( vectorGetX( v ) ),
+		scalarTan( vectorGetY( v ) ),
+		scalarTan( vectorGetZ( v ) ),
+		scalarTan( vectorGetW( v ) )
+	);
+}
+
 inline __m128d stdSinCos( double a )
 {
 	return _mm_setr_pd( std::cos( a ), std::sin( a ) );
@@ -80,6 +91,8 @@ bool testStdlib()
 
 	x = vectorTan( a );
 	y = stdTan( a );
+	assertEqual( x, y );
+	x = testScalarTan( a );
 	assertEqual( x, y );
 
 	for( int i = -4; i <= 4; i++ )

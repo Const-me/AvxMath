@@ -305,12 +305,41 @@ namespace AvxMath
 		return _mm256_div_pd( mul, div );
 	}
 
+	double scalarTan( double a )
+	{
+		// Wrap into [ -pi/2 .. +pi/2 ] interval.
+		a *= g_TanConstants.invPi;
+		a -= round( a );
+
+		// Use 16-byte loads to compute polynomials for both numerator and denominator in two lanes of the vector
+		const __m128d av = _mm_set1_pd( a );
+		__m128d acc = _mm_loadu_pd( &g_TanConstants.mul0 );
+		const __m128d x2 = _mm_mul_pd( av, av );
+		acc = vectorMultiplyAdd( x2, _mm_loadu_pd( &g_TanConstants.mul2 ), acc );
+
+		const __m128d x4 = _mm_mul_pd( x2, x2 );
+		acc = vectorMultiplyAdd( x4, _mm_loadu_pd( &g_TanConstants.mul4 ), acc );
+
+		const __m128d x6 = _mm_mul_pd( x4, x2 );
+		acc = vectorMultiplyAdd( x6, _mm_loadu_pd( &g_TanConstants.mul6 ), acc );
+
+		// Extract lanes from the vector, compute final result
+		double mul = vectorGetX( acc ) * vectorGetX( av );
+		double div = vectorGetY( acc );
+		return mul / div;
+	}
+
 	__m256d _AM_CALL_ vectorCot( __m256d a )
 	{
 		// cot( a ) = tan( Pi/2 - a )
 		// https://en.wikipedia.org/wiki/List_of_trigonometric_identities#Reflections
 		a = _mm256_sub_pd( broadcast( g_piConstants.halfPi ), a );
 		return vectorTan( a );
+	}
+
+	double scalarCot( double a )
+	{
+		return scalarTan( g_piConstants.halfPi - a );
 	}
 
 	static const struct TanhConstants

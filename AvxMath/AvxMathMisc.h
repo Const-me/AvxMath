@@ -66,6 +66,14 @@ namespace AvxMath
 		return _mm256_add_pd( _mm256_mul_pd( a, b ), c );
 #endif
 	}
+	inline __m128d vectorMultiplyAdd( __m128d a, __m128d b, __m128d c )
+	{
+#if _AM_FMA3_INTRINSICS_
+		return _mm_fmadd_pd( a, b, c );
+#else
+		return _mm_add_pd( _mm_mul_pd( a, b ), c );
+#endif
+	}
 
 	// Tests whether the components of a 4D vector are within set bounds, i.e. -bounds <= vec <= bounds
 	inline bool vector4InBounds( __m256d vec, __m256d bounds )
@@ -192,7 +200,8 @@ namespace AvxMath
 		}
 	}
 
-	// Absolute errors for sin/cos, compared to standard library of VC++, are within 1.8E-08, i.e. these are reasonably accurate approximations, despite way faster.
+	// The sine/cosine functions are using 11-degree minimax approximation for sine, 10-degree for cosine.
+	// Absolute errors for sine/cosine, compared to standard library of VC++, are within 1.8E-08, i.e. these are reasonably accurate approximations, despite way faster.
 
 	// Compute both sine and cosine of 4 angles in radian
 	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
@@ -200,13 +209,18 @@ namespace AvxMath
 	// Compute both sine and cosine of the angle, return a vector with [ cos, sin ] values
 	__m128d scalarSinCos( double a );
 
+	// Sine of the angle
 	double scalarSin( double a );
+	// Cosine of the angle
 	double scalarCos( double a );
 
+	// Tangent and cotangent are using Padé approximation of the degrees 7/6 for numerator/denominator
 	__m256d _AM_CALL_ vectorTan( __m256d a );
 	__m256d _AM_CALL_ vectorCot( __m256d a );
+	double scalarTan( double a );
+	double scalarCot( double a );
 
-	// An approximation of hyperbolic tangent
+	// A low-precision approximation of hyperbolic tangent
 	__m256d _AM_CALL_ vectorTanH( __m256d vec );
 
 	// Round number to nearest integer without function calls
