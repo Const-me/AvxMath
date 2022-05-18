@@ -30,6 +30,7 @@ namespace AvxMath
 
 #include "AvxMathMisc.h"
 #include "AvxMathMem.h"
+#include "AvxMathTrig.h"
 #include "AvxMathVector.h"
 #include "AvxMathMatrix.h"
 #include "AvxMathQuaternion.h"

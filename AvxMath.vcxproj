@@ -152,12 +152,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AvxMath.cpp" />
+    <ClCompile Include="AvxMath\AvxMathTrig.cpp" />
     <ClCompile Include="AvxMath\AvxMathMisc.cpp" />
     <ClCompile Include="AvxMath\AvxMathQuaternion.cpp" />
     <ClCompile Include="testDx.cpp" />
     <ClCompile Include="testStdlib.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AvxMath\AvxMathTrig.h" />
     <ClInclude Include="AvxMath\AvxMath.h" />
     <ClInclude Include="AvxMath\AvxMathMatrix.h" />
     <ClInclude Include="AvxMath\AvxMathMem.h" />
