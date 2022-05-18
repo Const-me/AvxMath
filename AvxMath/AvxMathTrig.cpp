@@ -1,7 +1,7 @@
-#include "AvxMath.h"
+﻿#include "AvxMath.h"
 #include <array>
 
-namespace AvxMath 
+namespace AvxMath
 {
 	alignas( 32 ) static const struct
 	{
@@ -237,9 +237,8 @@ namespace AvxMath
 		return _mm_cvtsd_f64( tmp );
 	}
 
-	static const struct
+	alignas( 16 ) static const struct
 	{
-		const double invPi = 1.0 / g_pi;
 		const double mul0 = -424539.12324285670928;  // -135135 * Pi
 		const double div0 = -135135;                 // -135135
 		const double mul2 = 537183.74348619438457;   // 62370 * Pi^2
@@ -248,13 +247,14 @@ namespace AvxMath
 		const double div4 = -306838.63675710767731;  // -3150 * Pi^4
 		const double mul6 = 3020.2932277767920678;   // Pi^7
 		const double div6 = 26918.897420108524239;   // 28 * Pi^6
+		const double invPi = 1.0 / g_pi;
 	}
 	g_TanConstants;
 
 	__m256d _AM_CALL_ vectorTan( __m256d a )
 	{
 		// Wrap into [ -pi/2 .. +pi/2 ] interval.
-		// Don't multiply back, we include that multiplier into these Pad� magic numbers.
+		// Don't multiply back, we include that multiplier into these Padé magic numbers.
 		a = _mm256_mul_pd( a, broadcast( g_TanConstants.invPi ) );
 		__m256d tmp = _mm256_round_pd( a, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC );
 		a = _mm256_sub_pd( a, tmp );
