@@ -126,30 +126,18 @@ namespace AvxMath
 		const __m256d b2 = _mm256_permute4x64_pd( b, _MM_SHUFFLE( 3, 1, 0, 2 ) );	// b.zxyw
 		const __m256d a2 = _mm256_permute4x64_pd( a, _MM_SHUFFLE( 3, 1, 0, 2 ) );	// a.zxyw
 		const __m256d b1 = _mm256_permute4x64_pd( b, _MM_SHUFFLE( 3, 0, 2, 1 ) );	// b.yzxw
-
-		return _mm256_sub_pd( _mm256_mul_pd( a1, b2 ), _mm256_mul_pd( a2, b1 ) );
 #else
-		const __m128d al = low2( a );		// a.xy
-		const __m128d ah = high2( a );	// a.zw
-		const __m128d bl = low2( b );		// b.xy
-		const __m128d bh = high2( b );	// b.zw
+		const __m256d af = flipHighLow( a );	// a.zwxy
+		const __m256d bf = flipHighLow( b );	// b.zwxy
 
-		const __m128d ayz = _mm_shuffle_pd( al, ah, _MM_SHUFFLE2( 0, 1 ) );	// a.yz
-		const __m128d azx = _mm_unpacklo_pd( ah, al );	// a.zx
-		const __m128d byz = _mm_shuffle_pd( bl, bh, _MM_SHUFFLE2( 0, 1 ) );	// a.yz
-		const __m128d bzx = _mm_unpacklo_pd( bh, bl );	// a.zx
-
-		const __m128d low = _mm_sub_pd( _mm_mul_pd( ayz, bzx ), _mm_mul_pd( azx, byz ) );
-
-		const __m128d axw = _mm_blend_pd( al, ah, 0b10 );	// a.xw
-		const __m128d ayw = _mm_unpackhi_pd( al, ah );	// a.yw
-		const __m128d bxw = _mm_blend_pd( bl, bh, 0b10 );	// b.xw
-		const __m128d byw = _mm_unpackhi_pd( bl, bh );	// b.yw
-
-		const __m128d high = _mm_sub_pd( _mm_mul_pd( axw, byw ), _mm_mul_pd( ayw, bxw ) );
-
-		return _mm256_setr_m128d( low, high );
+		__m256d a1 = _mm256_shuffle_pd( a, af, 0b0101 ); // a.yzwx
+		__m256d b1 = _mm256_shuffle_pd( b, bf, 0b0101 ); // b.yzwx
+		const __m256d b2 = _mm256_shuffle_pd( bf, b, 0b1100 ); // b.zxyw
+		const __m256d a2 = _mm256_shuffle_pd( af, a, 0b1100 ); // a.zxyw
+		a1 = _mm256_permute_pd( a1, 0b0110 );	// a.yzxw
+		b1 = _mm256_permute_pd( b1, 0b0110 );	// b.yzxw
 #endif
+		return _mm256_sub_pd( _mm256_mul_pd( a1, b2 ), _mm256_mul_pd( a2, b1 ) );
 	}
 
 	// Convert homogeneous vector to Cartesian, i.e. divide by W
