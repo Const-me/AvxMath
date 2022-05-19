@@ -66,50 +66,22 @@ namespace AvxMath
 
 		const double* const coeffs = (const double*)g_cosSinCoefficients.data();
 		// Compute polynomial approximation of sine
-		__m256d vConstants = broadcast( coeffs[ 9 ] );
-		__m256d Result = _mm256_mul_pd( vConstants, x2 );
-
-		vConstants = broadcast( coeffs[ 7 ] );
-		Result = _mm256_add_pd( Result, vConstants );
-		Result = _mm256_mul_pd( Result, x2 );
-
-		vConstants = broadcast( coeffs[ 5 ] );
-		Result = _mm256_add_pd( Result, vConstants );
-		Result = _mm256_mul_pd( Result, x2 );
-
-		vConstants = broadcast( coeffs[ 3 ] );
-		Result = _mm256_add_pd( Result, vConstants );
-		Result = _mm256_mul_pd( Result, x2 );
-
-		vConstants = broadcast( coeffs[ 1 ] );
-		Result = _mm256_add_pd( Result, vConstants );
-		Result = _mm256_mul_pd( Result, x2 );
-		Result = _mm256_add_pd( Result, one );
-		Result = _mm256_mul_pd( Result, x );
-		sin = Result;
+		__m256d vec = vectorMultiplyAdd( x2, broadcast( coeffs[ 9 ] ), broadcast( coeffs[ 7 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 5 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 3 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 1 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, one );
+		vec = _mm256_mul_pd( vec, x );
+		sin = vec;
 
 		// Compute polynomial approximation of cosine
-		vConstants = broadcast( coeffs[ 8 ] );
-		Result = _mm256_mul_pd( vConstants, x2 );
-
-		vConstants = broadcast( coeffs[ 6 ] );
-		Result = _mm256_add_pd( Result, vConstants );
-		Result = _mm256_mul_pd( Result, x2 );
-
-		vConstants = broadcast( coeffs[ 4 ] );
-		Result = _mm256_add_pd( Result, vConstants );
-		Result = _mm256_mul_pd( Result, x2 );
-
-		vConstants = broadcast( coeffs[ 2 ] );
-		Result = _mm256_add_pd( Result, vConstants );
-		Result = _mm256_mul_pd( Result, x2 );
-
-		vConstants = broadcast( coeffs[ 0 ] );
-		Result = _mm256_add_pd( Result, vConstants );
-		Result = _mm256_mul_pd( Result, x2 );
-		Result = _mm256_add_pd( Result, one );
-		Result = _mm256_or_pd( Result, sign );
-		cos = Result;
+		vec = vectorMultiplyAdd( x2, broadcast( coeffs[ 8 ] ), broadcast( coeffs[ 6 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 4 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 2 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 0 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, one );
+		vec = _mm256_or_pd( vec, sign );
+		cos = vec;
 	}
 
 	__m128d scalarSinCos( double a )
@@ -133,20 +105,11 @@ namespace AvxMath
 		const __m128d* const coeffs = g_cosSinCoefficients.data();
 
 		// Compute both polynomials using 2 lanes of the SSE vector
-		__m128d vec = _mm_mul_pd( x2, coeffs[ 4 ] );
-
-		vec = _mm_add_pd( vec, coeffs[ 3 ] );
-		vec = _mm_mul_pd( vec, x2 );
-
-		vec = _mm_add_pd( vec, coeffs[ 2 ] );
-		vec = _mm_mul_pd( vec, x2 );
-
-		vec = _mm_add_pd( vec, coeffs[ 1 ] );
-		vec = _mm_mul_pd( vec, x2 );
-
-		vec = _mm_add_pd( vec, coeffs[ 0 ] );
-		vec = _mm_mul_pd( vec, x2 );
-		vec = _mm_add_pd( vec, one );
+		__m128d vec = vectorMultiplyAdd( x2, coeffs[ 4 ], coeffs[ 3 ] );
+		vec = vectorMultiplyAdd( vec, x2, coeffs[ 2 ] );
+		vec = vectorMultiplyAdd( vec, x2, coeffs[ 1 ] );
+		vec = vectorMultiplyAdd( vec, x2, coeffs[ 0 ] );
+		vec = vectorMultiplyAdd( vec, x2, one );
 
 		// For sine, multiply by X; for cosine, multiply by the sign
 		__m128d mul = _mm_or_pd( one, sign );
