@@ -40,8 +40,12 @@ namespace AvxMath
 	inline __m256d vectorNegateLanes( __m256d vec )
 	{
 		static_assert( mask >= 0 && mask <= 0b1111, "The lanes mask should be in [ 0b0000 - 0b1111 ] range" );
+
 		if constexpr( 0 == mask )
 			return vec;
+		if constexpr( 0b0101 == mask )
+			return _mm256_addsub_pd( _mm256_setzero_pd(), vec );
+
 		__m256d neg = vectorNegate( vec );
 		if constexpr( 0b1111 == mask )
 			return neg;

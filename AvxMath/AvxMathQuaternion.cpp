@@ -16,9 +16,9 @@ namespace AvxMath
 #if _AM_FMA3_INTRINSICS_
 		res = _mm256_fmsubadd_pd( bb, a, res );
 #else
-		tmp = _mm256_mul_pd( bb, a );
-		tmp = _mm256_addsub_pd( _mm256_setzero_pd(), tmp );
-		res = _mm256_sub_pd( res, tmp );
+		bb = _mm256_mul_pd( bb, a );
+		tmp = _mm256_addsub_pd( _mm256_setzero_pd(), res );
+		res = _mm256_sub_pd( bb, tmp );
 #endif
 
 		// [ ++-- ] b.Y * a.ZWXY
