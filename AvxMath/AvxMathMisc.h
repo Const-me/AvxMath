@@ -75,16 +75,32 @@ namespace AvxMath
 #endif
 	}
 
-	// Tests whether the components of a 4D vector are within set bounds, i.e. -bounds <= vec <= bounds
+	// Tests whether the components of the 4D vector are within set bounds, i.e. -bounds <= vec <= bounds
 	inline bool vector4InBounds( __m256d vec, __m256d bounds )
 	{
 		// Compute absolute value
 		vec = vectorAbs( vec );
-		// Compare for vec > bounds but we want NAN to result in TRUE that's why the weird predicate,
+		// Compare for vec > bounds but we want NAN to result in TRUE that's why the weird predicate
 		// https://stackoverflow.com/a/64191351/126995
 		__m256d cmp = _mm256_cmp_pd( vec, bounds, _CMP_NLE_UQ );
 		// Return true (meaning in bounds) when the cmp is [ false, false, false, false ]
 		return (bool)_mm256_testz_pd( cmp, cmp );
+	}
+
+	// Tests whether the components of the 3D vector are within set bounds, i.e. -bounds <= vec <= bounds
+	inline bool vector3InBounds( __m256d vec, __m256d bounds )
+	{
+		vec = vectorAbs( vec );
+		__m256d cmp = _mm256_cmp_pd( vec, bounds, _CMP_NLE_UQ );
+		return 0 == ( _mm256_movemask_pd( cmp ) & 0b111 );
+	}
+
+	// Tests whether the components of the 2D vector are within set bounds, i.e. -bounds <= vec <= bounds
+	inline bool vector2InBounds( __m128d vec, __m128d bounds )
+	{
+		vec = vectorAbs( vec );
+		__m128d cmp = _mm_cmp_pd( vec, bounds, _CMP_NLE_UQ );
+		return (bool)_mm_testz_pd( cmp, cmp );
 	}
 
 	// Load a scalar, broadcast to 4 lanes; the broadcasting is free.
@@ -96,7 +112,7 @@ namespace AvxMath
 	// Load a scalar, broadcast to 2 lanes; the broadcasting is free.
 	inline __m128d broadcast2( const double& v )
 	{
-		return _mm_load1_pd( &v );
+		return _mm_loaddup_pd( &v );
 	}
 
 	inline double vectorGetX( __m128d vec )

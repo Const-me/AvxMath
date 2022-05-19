@@ -42,4 +42,20 @@ namespace AvxMath
 	{
 		return quaternionRotationNormal( vector3Normalize( normalAxis ), angle );
 	}
+
+	// Transform vector using a rotation expressed as a unit quaternion
+	inline __m256d vector3Rotate( __m256d v, __m256d q )
+	{
+		v = _mm256_blend_pd( v, _mm256_setzero_pd(), 0b1000 );
+		__m256d r = quaternionMultiply( quaternionConjugate( q ), v );
+		return quaternionMultiply( r, q );
+	}
+
+	// Transform vector using the inverse of a rotation expressed as a unit quaternion
+	inline __m256d vector3InverseRotate( __m256d v, __m256d q )
+	{
+		v = _mm256_blend_pd( v, _mm256_setzero_pd(), 0b1000 );
+		__m256d r = quaternionMultiply( q, v );
+		return quaternionMultiply( r, quaternionConjugate( q ) );
+	}
 }
