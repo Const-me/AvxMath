@@ -62,8 +62,7 @@ namespace AvxMath
 
 		// static const XMVECTORF32  Sign = { { { 1.0f, -1.0f, -1.0f, 1.0f } } };
 		// XMVECTOR Q1 = _mm256_mul_pd( P1, Sign.v );
-		__m256d p1Neg = vectorNegate( P1 );
-		__m256d Q1 = _mm256_blend_pd( P1, p1Neg, 0b0110 );
+		__m256d Q1 = vectorNegateLanes<0b0110>( P1 );
 
 		__m256d Q0 = _mm256_mul_pd( P0, Y0 );
 		Q1 = _mm256_mul_pd( Q1, Y1 );

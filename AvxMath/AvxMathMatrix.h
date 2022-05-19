@@ -90,4 +90,17 @@ namespace AvxMath
 
 		return result;
 	}
+
+	// Create an identity matrix
+	inline Matrix4x4 matrixIdentity()
+	{
+		const __m256d zero = _mm256_setzero_pd();
+		const __m256d one = broadcast( g_misc.one );
+		Matrix4x4 m;
+		m.r0 = _mm256_blend_pd( zero, one, 0b0001 );
+		m.r1 = _mm256_blend_pd( zero, one, 0b0010 );
+		m.r2 = _mm256_blend_pd( zero, one, 0b0100 );
+		m.r3 = _mm256_blend_pd( zero, one, 0b1000 );
+		return m;
+	}
 }

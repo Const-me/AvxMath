@@ -173,7 +173,7 @@ namespace AvxMath
 
 	extern const struct sMiscConstants
 	{
-		const double negativeZero = -0.0f;
+		const double negativeZero = -0.0;
 		const double one = 1;
 		const double negativeOne = -1;
 		const double oneHalf = 0.5;
