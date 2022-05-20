@@ -32,17 +32,18 @@ namespace AvxMath
 		return a - v;
 	}
 
-	// Merged and interleaved magic numbers from g_XMCosCoefficients0, g_XMSinCoefficients0, g_XMCosCoefficients1, and g_XMSinCoefficients1 vectors
-	// The X lanes correspond to cosine, Y lanes to sine.
+	// Interleaved magic numbers for cosine and sine polynomial approximations.
+	// See GTE_C_COS_DEG10_C[1-5] and GTE_C_SIN_DEG11_C[1-5] macros in that header https://www.geometrictools.com/GTE/Mathematics/Math.h
+	// The X lanes of these vectors correspond to cosine, Y lanes to sine.
 	// This way scalarSinCos function can use memory operands for optimal performance.
 	// The rest of the functions which use these numbers are loading scalars, RAM layout doesn't matter much.
 	static const std::array<__m128d, 5> g_cosSinCoefficients
 	{
-		_mm_setr_pd( -0.5,           -0.16666667 ),
-		_mm_setr_pd( +0.041666638,   +0.0083333310 ),
-		_mm_setr_pd( -0.0013888378,  -0.00019840874 ),
-		_mm_setr_pd( +2.4760495e-05, +2.7525562e-06 ),
-		_mm_setr_pd( -2.6051615e-07, -2.3889859e-08 ),
+		_mm_setr_pd( -4.9999999508695869e-01,  -1.6666666601721269e-01 ),
+		_mm_setr_pd( +4.1666638865338612e-02,  +8.3333303183525942e-03 ),
+		_mm_setr_pd( -1.3888377661039897e-03,  -1.9840782426250314e-04 ),
+		_mm_setr_pd( +2.4760495088926859e-05,  +2.7521557770526783e-06 ),
+		_mm_setr_pd( -2.6051615464872668e-07,  -2.3828544692960918e-08 ),
 	};
 
 	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d x )

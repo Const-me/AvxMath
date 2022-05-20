@@ -3,7 +3,7 @@
 namespace AvxMath
 {
 	// The sine/cosine are both using minimax polynomial approximations: 11-degree for sine, 10-degree for cosine.
-	// Absolute errors for sine/cosine, compared to standard library of VC++, are within 1.8E-08, i.e. reasonably accurate despite way faster.
+	// Absolute errors compared to the standard library of VC++ for sine / cosine are within 5.7E-11 / 3.1E-10 when using FMA3, i.e. pretty accurate despite way faster.
 
 	// Compute both sine and cosine of 4 angles in radian
 	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
