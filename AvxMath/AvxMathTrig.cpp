@@ -85,6 +85,66 @@ namespace AvxMath
 		cos = vec;
 	}
 
+	__m256d vectorSin( __m256d x )
+	{
+		// Force the value within the bounds of pi
+		x = vectorModAngles( x );
+
+		const __m256d one = broadcast( g_misc.one );
+		const __m256d neg0 = broadcast( g_misc.negativeZero );
+
+		// Map in [-pi/2,pi/2] with sin(y) = sin(x), cos(y) = sign*cos(x).
+		__m256d sign = _mm256_and_pd( x, neg0 );
+		__m256d c = _mm256_or_pd( broadcast( g_piConstants.pi ), sign );  // pi when x >= 0, -pi when x < 0
+		__m256d absx = _mm256_andnot_pd( sign, x );  // |x|
+		__m256d rflx = _mm256_sub_pd( c, x );
+		__m256d comp = _mm256_cmp_pd( absx, broadcast( g_piConstants.halfPi ), _CMP_LE_OQ );
+		x = _mm256_blendv_pd( rflx, x, comp );
+
+		const __m256d x2 = _mm256_mul_pd( x, x );
+
+		const double* const coeffs = (const double*)g_cosSinCoefficients.data();
+		// Compute polynomial approximation of sine
+		__m256d vec = vectorMultiplyAdd( x2, broadcast( coeffs[ 9 ] ), broadcast( coeffs[ 7 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 5 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 3 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 1 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, one );
+		vec = _mm256_mul_pd( vec, x );
+		return vec;
+	}
+
+	__m256d vectorCos( __m256d x )
+	{
+		// Force the value within the bounds of pi
+		x = vectorModAngles( x );
+
+		const __m256d one = broadcast( g_misc.one );
+		const __m256d neg0 = broadcast( g_misc.negativeZero );
+
+		// Map in [-pi/2,pi/2] with sin(y) = sin(x), cos(y) = sign*cos(x).
+		__m256d sign = _mm256_and_pd( x, neg0 );
+		__m256d c = _mm256_or_pd( broadcast( g_piConstants.pi ), sign );  // pi when x >= 0, -pi when x < 0
+		__m256d absx = _mm256_andnot_pd( sign, x );  // |x|
+		__m256d rflx = _mm256_sub_pd( c, x );
+		__m256d comp = _mm256_cmp_pd( absx, broadcast( g_piConstants.halfPi ), _CMP_LE_OQ );
+		x = _mm256_blendv_pd( rflx, x, comp );
+		sign = _mm256_andnot_pd( comp, neg0 );
+
+		const __m256d x2 = _mm256_mul_pd( x, x );
+
+		const double* const coeffs = (const double*)g_cosSinCoefficients.data();
+
+		// Compute polynomial approximation of cosine
+		__m256d vec = vectorMultiplyAdd( x2, broadcast( coeffs[ 8 ] ), broadcast( coeffs[ 6 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 4 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 2 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 0 ] ) );
+		vec = vectorMultiplyAdd( vec, x2, one );
+		vec = _mm256_or_pd( vec, sign );
+		return vec;
+	}
+
 	__m128d scalarSinCos( double a )
 	{
 		a = scalarModAngles( a );

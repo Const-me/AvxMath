@@ -7,6 +7,10 @@ namespace AvxMath
 
 	// Compute both sine and cosine of 4 angles in radian
 	void _AM_CALL_ vectorSinCos( __m256d& sin, __m256d& cos, __m256d angles );
+	// Compute sine of 4 angles
+	__m256d vectorSin( __m256d angles );
+	// Compute cosine of 4 angles
+	__m256d vectorCos( __m256d angles );
 
 	// Compute both sine and cosine of the angle, make a 2D vector with [ cos, sin ] values
 	__m128d scalarSinCos( double a );
