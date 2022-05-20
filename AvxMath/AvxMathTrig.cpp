@@ -222,45 +222,16 @@ namespace AvxMath
 		__m256d tmp = _mm256_round_pd( a, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC );
 		a = _mm256_sub_pd( a, tmp );
 
-#if 1
-		__m256d mul = broadcast( g_TanConstants.mul0 );
-		__m256d div = broadcast( g_TanConstants.div0 );
-
 		const __m256d x2 = _mm256_mul_pd( a, a );
-		mul = vectorMultiplyAdd( broadcast( g_TanConstants.mul2 ), x2, mul );	// 1 + mul2*x^2
-		div = vectorMultiplyAdd( broadcast( g_TanConstants.div2 ), x2, div );	// 1 + div2*x^2
 
-		const __m256d x4 = _mm256_mul_pd( x2, x2 );
-		mul = vectorMultiplyAdd( broadcast( g_TanConstants.mul4 ), x4, mul );	// 1 + a1*x^2 + a2*x^4
-		div = vectorMultiplyAdd( broadcast( g_TanConstants.div4 ), x4, div );	// 1 + b1*x^2 + b2*x^4
+		__m256d mul = vectorMultiplyAdd( x2, broadcast( g_TanConstants.mul6 ), broadcast( g_TanConstants.mul4 ) );
+		__m256d div = vectorMultiplyAdd( x2, broadcast( g_TanConstants.div6 ), broadcast( g_TanConstants.div4 ) );
 
-		const __m256d x6 = _mm256_mul_pd( x4, x2 );
-		mul = vectorMultiplyAdd( broadcast( g_TanConstants.mul6 ), x6, mul );	// 1 + a1*x^2 + a2*x^4
-		div = vectorMultiplyAdd( broadcast( g_TanConstants.div6 ), x6, div );	// 1 + b1*x^2 + b2*x^4
+		mul = vectorMultiplyAdd( mul, x2, broadcast( g_TanConstants.mul2 ) );
+		div = vectorMultiplyAdd( div, x2, broadcast( g_TanConstants.div2 ) );
 
-#else
-		// Because the source value is in [ -0.5 .. 0.5 ] as opposed to (-pi/2 .. +pi/2), we're sure x^6 << x^4 << x^2.
-		// For optimal numerical precision, starting to compute these polynomials with smaller numbers.
-		// Practically speaking, the difference is very small.
-
-		const __m256d x2 = _mm256_mul_pd( a, a );
-		const __m256d x4 = _mm256_mul_pd( x2, x2 );
-		const __m256d x6 = _mm256_mul_pd( x4, x2 );
-
-		__m256d mul = broadcast( g_TanConstants.mul6 );
-		__m256d div = broadcast( g_TanConstants.div6 );
-		mul = _mm256_mul_pd( mul, x6 );
-		div = _mm256_mul_pd( div, x6 );
-
-		mul = vectorMultiplyAdd( broadcast( g_TanConstants.mul4 ), x4, mul );	// 1 + a1*x^2 + a2*x^4
-		div = vectorMultiplyAdd( broadcast( g_TanConstants.div4 ), x4, div );	// 1 + b1*x^2 + b2*x^4
-
-		mul = vectorMultiplyAdd( broadcast( g_TanConstants.mul2 ), x2, mul );	// 1 + mul2*x^2
-		div = vectorMultiplyAdd( broadcast( g_TanConstants.div2 ), x2, div );	// 1 + div2*x^2
-
-		mul = _mm256_add_pd( mul, broadcast( g_TanConstants.mul0 ) );
-		div = _mm256_add_pd( div, broadcast( g_TanConstants.div0 ) );
-#endif
+		mul = vectorMultiplyAdd( mul, x2, broadcast( g_TanConstants.mul0 ) );
+		div = vectorMultiplyAdd( div, x2, broadcast( g_TanConstants.div0 ) );
 
 		mul = _mm256_mul_pd( mul, a );
 		return _mm256_div_pd( mul, div );
@@ -274,15 +245,11 @@ namespace AvxMath
 
 		// Use 16-byte loads to compute polynomials for both numerator and denominator in two lanes of the vector
 		const __m128d av = _mm_set1_pd( a );
-		__m128d acc = _mm_loadu_pd( &g_TanConstants.mul0 );
 		const __m128d x2 = _mm_mul_pd( av, av );
-		acc = vectorMultiplyAdd( x2, _mm_loadu_pd( &g_TanConstants.mul2 ), acc );
 
-		const __m128d x4 = _mm_mul_pd( x2, x2 );
-		acc = vectorMultiplyAdd( x4, _mm_loadu_pd( &g_TanConstants.mul4 ), acc );
-
-		const __m128d x6 = _mm_mul_pd( x4, x2 );
-		acc = vectorMultiplyAdd( x6, _mm_loadu_pd( &g_TanConstants.mul6 ), acc );
+		__m128d acc = vectorMultiplyAdd( x2, _mm_loadu_pd( &g_TanConstants.mul6 ), _mm_loadu_pd( &g_TanConstants.mul4 ) );
+		acc = vectorMultiplyAdd( acc, x2, _mm_loadu_pd( &g_TanConstants.mul2 ) );
+		acc = vectorMultiplyAdd( acc, x2, _mm_loadu_pd( &g_TanConstants.mul0 ) );
 
 		// Extract lanes from the vector, compute final result
 		double mul = vectorGetX( acc ) * vectorGetX( av );
