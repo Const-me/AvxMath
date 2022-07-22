@@ -49,7 +49,8 @@ namespace AvxMath
 		_mm256_storeu_pd( rdi + 12, mat.r3 );
 	}
 
-	// Load 4x4 matrix, transposing on the fly to the column-major layout. Faster than transposing in registers
+	// Load 4x4 matrix, transposing on the fly to the column-major layout
+	// Slightly faster than transposing with vector shuffles after loading
 	inline Matrix4x4 loadMatrixTransposed( const double* rsi, size_t stride = 4 )
 	{
 		assert( stride >= 4 );

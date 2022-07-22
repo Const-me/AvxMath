@@ -14,6 +14,7 @@ namespace AvxMath
 		return _mm256_extractf128_pd( vec, 1 );
 	}
 
+	// Duplicate [ a, b ] vector into [ a, b, a, b ]
 	inline __m256d dup2( __m128d vec )
 	{
 		return _mm256_insertf128_pd( _mm256_castpd128_pd256( vec ), vec, 1 );
@@ -30,6 +31,8 @@ namespace AvxMath
 	{
 		return _mm256_sub_pd( _mm256_setzero_pd(), vec );
 	}
+	
+	// -vec
 	inline __m128d vectorNegate( __m128d vec )
 	{
 		return _mm_sub_pd( _mm_setzero_pd(), vec );
@@ -57,11 +60,13 @@ namespace AvxMath
 	{
 		return _mm256_max_pd( vec, vectorNegate( vec ) );
 	}
+	// abs( vec )
 	inline __m128d vectorAbs( __m128d vec )
 	{
 		return _mm_max_pd( vec, vectorNegate( vec ) );
 	}
 
+	// a * b + c, using FMA3 if available
 	inline __m256d vectorMultiplyAdd( __m256d a, __m256d b, __m256d c )
 	{
 #if _AM_FMA3_INTRINSICS_
@@ -70,6 +75,8 @@ namespace AvxMath
 		return _mm256_add_pd( _mm256_mul_pd( a, b ), c );
 #endif
 	}
+
+	// a * b + c, using FMA3 if available
 	inline __m128d vectorMultiplyAdd( __m128d a, __m128d b, __m128d c )
 	{
 #if _AM_FMA3_INTRINSICS_
@@ -79,7 +86,7 @@ namespace AvxMath
 #endif
 	}
 
-	// Tests whether the components of the 4D vector are within set bounds, i.e. -bounds <= vec <= bounds
+	// Test whether the components of the 4D vector are within set bounds, i.e. -bounds <= vec <= bounds
 	inline bool vector4InBounds( __m256d vec, __m256d bounds )
 	{
 		// Compute absolute value
@@ -119,27 +126,32 @@ namespace AvxMath
 		return _mm_loaddup_pd( &v );
 	}
 
+	// Extract X lane from the vector
 	inline double vectorGetX( __m128d vec )
 	{
 		return _mm_cvtsd_f64( vec );
 	}
+	// Extract Y lane from the vector
 	inline double vectorGetY( __m128d vec )
 	{
 		return _mm_cvtsd_f64( _mm_permute_pd( vec, 0b11 ) );
 	}
-
+	// Extract X lane from the vector
 	inline double vectorGetX( __m256d vec )
 	{
 		return _mm256_cvtsd_f64( vec );
 	}
+	// Extract Y lane from the vector
 	inline double vectorGetY( __m256d vec )
 	{
 		return _mm_cvtsd_f64( _mm_permute_pd( low2( vec ), 0b11 ) );
 	}
+	// Extract Z lane from the vector
 	inline double vectorGetZ( __m256d vec )
 	{
 		return _mm_cvtsd_f64( high2( vec ) );
 	}
+	// Extract W lane from the vector
 	inline double vectorGetW( __m256d vec )
 	{
 		__m128d high = high2( vec );
@@ -147,6 +159,7 @@ namespace AvxMath
 		return _mm_cvtsd_f64( high );
 	}
 
+	// Broadcast X lane into all 4 lanes
 	inline __m256d vectorSplatX( __m256d vec )
 	{
 		__m128d low = low2( vec );
@@ -158,6 +171,7 @@ namespace AvxMath
 #endif
 	}
 
+	// Broadcast Y lane into all 4 lanes
 	inline __m256d vectorSplatY( __m256d vec )
 	{
 		__m128d low = low2( vec );
@@ -169,6 +183,7 @@ namespace AvxMath
 #endif
 	}
 
+	// Broadcast Z lane into all 4 lanes
 	inline __m256d vectorSplatZ( __m256d vec )
 	{
 #if _AM_AVX2_INTRINSICS_
@@ -180,6 +195,7 @@ namespace AvxMath
 #endif
 	}
 
+	// Broadcast W lane into all 4 lanes
 	inline __m256d vectorSplatW( __m256d vec )
 	{
 #if _AM_AVX2_INTRINSICS_
@@ -191,6 +207,7 @@ namespace AvxMath
 #endif
 	}
 
+	// Miscellaneous FP64 numbers used internally in this library
 	extern const struct sMiscConstants
 	{
 		const double negativeZero = -0.0;
@@ -208,17 +225,6 @@ namespace AvxMath
 		return _mm_cvtsi32_si128( *(const int*)( p ) );
 	}
 #endif
-
-	namespace details
-	{
-		inline void splatVector( Matrix4x4& mat, __m256d vec )
-		{
-			mat.r0 = vectorSplatX( vec );
-			mat.r1 = vectorSplatY( vec );
-			mat.r2 = vectorSplatZ( vec );
-			mat.r3 = vectorSplatW( vec );
-		}
-	}
 
 	// Round number to nearest integer without function calls
 	inline double round( double a )

@@ -1,11 +1,8 @@
 #include "AvxMath.h"
-#include <array>
 
 namespace AvxMath
 {
 	const struct sMiscConstants g_misc;
-
-
 
 	static const struct TanhConstants
 	{

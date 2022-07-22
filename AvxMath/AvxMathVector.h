@@ -154,7 +154,7 @@ namespace AvxMath
 	}
 
 	// Convert 2D Cartesian vector to 4D homogeneous, i.e. set ZW lanes to [ 0, 1 ]
-	inline __m256d vector3Homogeneous( __m128d vec )
+	inline __m256d vector2Homogeneous( __m128d vec )
 	{
 		__m128d high = _mm_setzero_pd();
 		high = _mm_loadh_pd( high, &g_misc.one );

@@ -73,20 +73,20 @@ namespace AvxMath
 		result.r2 = _mm256_mul_pd( vectorSplatZ( a.r0 ), b.r2 );
 		result.r3 = _mm256_mul_pd( vectorSplatW( a.r0 ), b.r3 );
 
-		result.r0 = _mm256_add_pd( result.r0, _mm256_mul_pd( vectorSplatX( a.r1 ), b.r0 ) );
-		result.r1 = _mm256_add_pd( result.r1, _mm256_mul_pd( vectorSplatY( a.r1 ), b.r1 ) );
-		result.r2 = _mm256_add_pd( result.r2, _mm256_mul_pd( vectorSplatZ( a.r1 ), b.r2 ) );
-		result.r3 = _mm256_add_pd( result.r3, _mm256_mul_pd( vectorSplatW( a.r1 ), b.r3 ) );
+		result.r0 = vectorMultiplyAdd( vectorSplatX( a.r1 ), b.r0, result.r0 );
+		result.r1 = vectorMultiplyAdd( vectorSplatY( a.r1 ), b.r1, result.r1 );
+		result.r2 = vectorMultiplyAdd( vectorSplatZ( a.r1 ), b.r2, result.r2 );
+		result.r3 = vectorMultiplyAdd( vectorSplatW( a.r1 ), b.r3, result.r3 );
 
-		result.r0 = _mm256_add_pd( result.r0, _mm256_mul_pd( vectorSplatX( a.r2 ), b.r0 ) );
-		result.r1 = _mm256_add_pd( result.r1, _mm256_mul_pd( vectorSplatY( a.r2 ), b.r1 ) );
-		result.r2 = _mm256_add_pd( result.r2, _mm256_mul_pd( vectorSplatZ( a.r2 ), b.r2 ) );
-		result.r3 = _mm256_add_pd( result.r3, _mm256_mul_pd( vectorSplatW( a.r2 ), b.r3 ) );
+		result.r0 = vectorMultiplyAdd( vectorSplatX( a.r2 ), b.r0, result.r0 );
+		result.r1 = vectorMultiplyAdd( vectorSplatY( a.r2 ), b.r1, result.r1 );
+		result.r2 = vectorMultiplyAdd( vectorSplatZ( a.r2 ), b.r2, result.r2 );
+		result.r3 = vectorMultiplyAdd( vectorSplatW( a.r2 ), b.r3, result.r3 );
 
-		result.r0 = _mm256_add_pd( result.r0, _mm256_mul_pd( vectorSplatX( a.r3 ), b.r0 ) );
-		result.r1 = _mm256_add_pd( result.r1, _mm256_mul_pd( vectorSplatY( a.r3 ), b.r1 ) );
-		result.r2 = _mm256_add_pd( result.r2, _mm256_mul_pd( vectorSplatZ( a.r3 ), b.r2 ) );
-		result.r3 = _mm256_add_pd( result.r3, _mm256_mul_pd( vectorSplatW( a.r3 ), b.r3 ) );
+		result.r0 = vectorMultiplyAdd( vectorSplatX( a.r3 ), b.r0, result.r0 );
+		result.r1 = vectorMultiplyAdd( vectorSplatY( a.r3 ), b.r1, result.r1 );
+		result.r2 = vectorMultiplyAdd( vectorSplatZ( a.r3 ), b.r2, result.r2 );
+		result.r3 = vectorMultiplyAdd( vectorSplatW( a.r3 ), b.r3, result.r3 );
 
 		return result;
 	}
