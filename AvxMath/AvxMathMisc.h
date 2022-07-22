@@ -167,7 +167,7 @@ namespace AvxMath
 		return _mm256_broadcastsd_pd( low );
 #else
 		low = _mm_permute_pd( low, 0b00 );
-		return _mm256_setr_m128d( low, low );
+		return dup2( low );
 #endif
 	}
 
@@ -179,7 +179,7 @@ namespace AvxMath
 #if _AM_AVX2_INTRINSICS_
 		return _mm256_broadcastsd_pd( low );
 #else
-		return _mm256_setr_m128d( low, low );
+		return dup2( low );
 #endif
 	}
 
@@ -191,7 +191,7 @@ namespace AvxMath
 #else
 		__m128d high = high2( vec );
 		high = _mm_permute_pd( high, 0b00 );
-		return _mm256_setr_m128d( high, high );
+		return dup2( high );
 #endif
 	}
 
@@ -203,7 +203,7 @@ namespace AvxMath
 #else
 		__m128d high = high2( vec );
 		high = _mm_permute_pd( high, 0b11 );
-		return _mm256_setr_m128d( high, high );
+		return dup2( high );
 #endif
 	}
 
@@ -254,4 +254,13 @@ namespace AvxMath
 	__m256d _AM_CALL_ vectorTanH( __m256d vec );
 
 	constexpr double g_pi = 3.141592653589793238;
+
+#ifndef _mm256_setr_m128d
+	// Workaround for a missing intrinsic in GCC, despite documented on intel.com
+	inline __m256d _mm256_setr_m128d( __m128d a, __m128d b )
+	{
+		__m256d r = _mm256_castpd128_pd256( a );
+		return _mm256_insertf128_pd( r, b, 1 );
+	}
+#endif
 }

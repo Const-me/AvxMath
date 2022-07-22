@@ -1,5 +1,6 @@
 #include "testStdlib.h"
 #include <cmath>
+#include <stdio.h>
 
 inline __m256d stdSin( __m256d v )
 {
@@ -65,7 +66,13 @@ static void computeSinCosError()
 		// Just in case, verify the sin/cos are in [ -1 .. +1 ] range - we don't want 1.0 + 1E-12 despite the 1E-12 is very small error
 		__m128d a = vectorAbs( my );
 		if( vectorGetX( a ) > 1 || vectorGetY( a ) > 1 )
+		{
+#ifdef _MSC_VER
 			__debugbreak();
+#else
+			assert( false );
+#endif
+		}
 
 		// Accumulate maximum absolute error
 		__m128d diff = _mm_sub_pd( my, std );
