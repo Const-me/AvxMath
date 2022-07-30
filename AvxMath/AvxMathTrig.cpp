@@ -65,23 +65,35 @@ namespace AvxMath
 
 		const __m256d x2 = _mm256_mul_pd( x, x );
 
-		const double* const coeffs = (const double*)g_cosSinCoefficients.data();
-		// Compute both polynomial approximations
-		__m256d rs = vectorMultiplyAdd( x2, broadcast( coeffs[ 9 ] ), broadcast( coeffs[ 7 ] ) );
-		__m256d rc = vectorMultiplyAdd( x2, broadcast( coeffs[ 8 ] ), broadcast( coeffs[ 6 ] ) );
+		// Compute both polynomial approximations, using 16-byte broadcast loads for the magic numbers
+		const __m256d y1 = _mm256_unpacklo_pd( x2, x2 );	// x2.xxzz
+		const __m256d y2 = _mm256_unpackhi_pd( x2, x2 );	// x2.yyww
 
-		rs = vectorMultiplyAdd( rs, x2, broadcast( coeffs[ 5 ] ) );
-		rc = vectorMultiplyAdd( rc, x2, broadcast( coeffs[ 4 ] ) );
-		
-		rs = vectorMultiplyAdd( rs, x2, broadcast( coeffs[ 3 ] ) );
-		rc = vectorMultiplyAdd( rc, x2, broadcast( coeffs[ 2 ] ) );
-		
-		rs = vectorMultiplyAdd( rs, x2, broadcast( coeffs[ 1 ] ) );
-		rc = vectorMultiplyAdd( rc, x2, broadcast( coeffs[ 0 ] ) );
-		
-		rs = vectorMultiplyAdd( rs, x2, one );
-		rc = vectorMultiplyAdd( rc, x2, one );
-		
+		__m256d r1 = _mm256_broadcast_pd( &g_cosSinCoefficients[ 4 ] );
+		__m256d r2 = r1;
+
+		__m256d tmp = _mm256_broadcast_pd( &g_cosSinCoefficients[ 3 ] );
+		r1 = vectorMultiplyAdd( r1, y1, tmp );
+		r2 = vectorMultiplyAdd( r2, y2, tmp );
+
+		tmp = _mm256_broadcast_pd( &g_cosSinCoefficients[ 2 ] );
+		r1 = vectorMultiplyAdd( r1, y1, tmp );
+		r2 = vectorMultiplyAdd( r2, y2, tmp );
+
+		tmp = _mm256_broadcast_pd( &g_cosSinCoefficients[ 1 ] );
+		r1 = vectorMultiplyAdd( r1, y1, tmp );
+		r2 = vectorMultiplyAdd( r2, y2, tmp );
+
+		tmp = _mm256_broadcast_pd( &g_cosSinCoefficients[ 0 ] );
+		r1 = vectorMultiplyAdd( r1, y1, tmp );
+		r2 = vectorMultiplyAdd( r2, y2, tmp );
+
+		r1 = vectorMultiplyAdd( r1, y1, one );
+		r2 = vectorMultiplyAdd( r2, y2, one );
+
+		__m256d rs = _mm256_unpackhi_pd( r1, r2 );
+		__m256d rc = _mm256_unpacklo_pd( r1, r2 );
+
 		sin = _mm256_mul_pd( rs, x );
 		cos = _mm256_or_pd( rc, sign );
 	}
