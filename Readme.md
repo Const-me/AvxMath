@@ -8,8 +8,8 @@ and can optionally use AVX2 and FMA3 instructions when enabled.<br/>
 Note however I don’t have old enough computers in this house.
 If you need AVX1 version, make sure to test on a PC from 2011-2014 which doesn’t have AVX2:
 Intel [Sandy Bridge](https://en.wikipedia.org/wiki/Sandy_Bridge),
-[Ivy Bridge](https://en.wikipedia.org/wiki/Ivy_Bridge_(microarchitecture\)),
-AMD [Jaguar](https://en.wikipedia.org/wiki/Jaguar_(microarchitecture\)) or similar.
+[Ivy Bridge](https://en.wikipedia.org/wiki/Ivy_Bridge_(microarchitecture)),
+AMD [Jaguar](https://en.wikipedia.org/wiki/Jaguar_(microarchitecture)) or similar.
 
 The current version was tested with C++/17 language version.<br/>
 It doesn’t use advanced language features though, should be trivial to downgrade if needed.
