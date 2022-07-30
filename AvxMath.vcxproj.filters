@@ -19,6 +19,7 @@
     <ClInclude Include="testsMisc.h" />
     <ClInclude Include="testStdlib.h" />
     <ClInclude Include="AvxMath\AvxMathTrig.h" />
+    <ClInclude Include="AvxMath\AvxMathPredicates.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="AvxMath\NatvisFile.natvis" />

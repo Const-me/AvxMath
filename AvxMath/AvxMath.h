@@ -33,5 +33,6 @@ namespace AvxMath
 #include "AvxMathMem.h"
 #include "AvxMathTrig.h"
 #include "AvxMathVector.h"
+#include "AvxMathPredicates.h"
 #include "AvxMathMatrix.h"
 #include "AvxMathQuaternion.h"

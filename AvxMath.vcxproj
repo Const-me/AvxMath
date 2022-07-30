@@ -159,6 +159,7 @@
     <ClCompile Include="testStdlib.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AvxMath\AvxMathPredicates.h" />
     <ClInclude Include="AvxMath\AvxMathTrig.h" />
     <ClInclude Include="AvxMath\AvxMath.h" />
     <ClInclude Include="AvxMath\AvxMathMatrix.h" />
