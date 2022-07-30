@@ -1,4 +1,5 @@
 // The main header of the AvxMath library, includes the rest of the headers.
+// https://github.com/Const-me/AvxMath/ MIT license
 #pragma once
 
 #if !defined(_AM_AVX2_INTRINSICS_) && defined(__AVX2__)
