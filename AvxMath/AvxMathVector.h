@@ -1,3 +1,4 @@
+// Routines operating on 2D, 3D and 4D vectors with FP64 lanes
 #pragma once
 
 namespace AvxMath

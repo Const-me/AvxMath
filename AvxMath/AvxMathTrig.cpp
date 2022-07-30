@@ -3,6 +3,35 @@
 
 namespace AvxMath
 {
+	static const double g_mulRadians = g_pi / 180.0;
+	static const double g_mulDegrees = 180.0 / g_pi;
+
+	__m256d radians( __m256d deg )
+	{
+		return _mm256_mul_pd( deg, broadcast( g_mulRadians ) );
+	}
+	__m128d radians( __m128d deg )
+	{
+		return _mm_mul_pd( deg, broadcast2( g_mulRadians ) );
+	}
+	double radians( double deg )
+	{
+		return deg * g_mulRadians;
+	}
+
+	__m256d degrees( __m256d rad )
+	{
+		return _mm256_mul_pd( rad, broadcast( g_mulDegrees ) );
+	}
+	__m128d degrees( __m128d rad )
+	{
+		return _mm_mul_pd( rad, broadcast2( g_mulDegrees ) );
+	}
+	double degrees( double rad )
+	{
+		return rad * g_mulDegrees;
+	}
+
 	alignas( 32 ) static const struct
 	{
 		const double pi = g_pi;

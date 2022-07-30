@@ -1,7 +1,22 @@
-﻿#pragma once
+﻿// Trigonometric functions
+#pragma once
 
 namespace AvxMath
 {
+	// Scale 4 angles from degrees to radians
+	__m256d radians( __m256d deg );
+	// Scale 2 angles from degrees to radians
+	__m128d radians( __m128d deg );
+	// Scale the angle from degrees to radians
+	double radians( double deg );
+
+	// Scale 4 angles from radians to degrees
+	__m256d degrees( __m256d rad );
+	// Scale 2 angles from radians to degrees
+	__m128d degrees( __m128d rad );
+	// Scale the angle from radians to degrees
+	double degrees( double rad );
+
 	// The sine/cosine are both using minimax polynomial approximations: 11-degree for sine, 10-degree for cosine.
 	// Absolute errors compared to the standard library of VC++ for sine / cosine are within 5.7E-11 / 3.1E-10 when using FMA3, i.e. pretty accurate despite way faster.
 

@@ -1,3 +1,4 @@
+// Miscellaneous routines used by other functions of the library
 #pragma once
 
 namespace AvxMath

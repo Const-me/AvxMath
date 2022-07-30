@@ -1,3 +1,4 @@
+// Matrix-related functions
 #pragma once
 
 namespace AvxMath
@@ -34,6 +35,14 @@ namespace AvxMath
 	{
 		vec = vector3Homogeneous( vec );
 		return vector4Transform( vec, mat );
+	}
+
+	// Transforms a 3D vector by a given matrix, projecting the result back into w = 1.
+	inline __m256d vector3TransformCoord( __m256d vec, const Matrix4x4& mat )
+	{
+		vec = vector3Homogeneous( vec );
+		vec = vector4Transform( vec, mat );
+		return vector4Carthesian( vec );
 	}
 
 	// Transforms 4D vector by the column-major matrix; substantially faster than vector4Transform

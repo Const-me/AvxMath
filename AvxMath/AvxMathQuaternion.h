@@ -1,12 +1,15 @@
+// Quaternion-related functions
 #pragma once
 
 namespace AvxMath
 {
+	// Normalize the quaternion
 	inline __m256d quaternionNormalize( __m256d q )
 	{
 		return vector4Normalize( q );
 	}
 
+	// Compute conjugate of the quaternion
 	inline __m256d quaternionConjugate( __m256d q )
 	{
 		return vectorNegateLanes<0b0111>( q );
@@ -15,10 +18,12 @@ namespace AvxMath
 	// Product of two quaternions
 	__m256d _AM_CALL_ quaternionMultiply( __m256d a, __m256d b );
 
-	// Create rotation quaternion based on a vector containing the Euler angles (pitch, yaw, and roll).
+	// Create rotation quaternion based on a vector containing the Euler angles [ pitch, yaw, roll ] in radians
+	// W component of the input vector is ignored
 	__m256d _AM_CALL_ quaternionRollPitchYaw( __m256d angles );
 
-	// Create rotation quaternion from normalized axis of rotation; angles are measured clockwise when looking along the rotation axis toward the origin.
+	// Create rotation quaternion from normalized axis of rotation.
+	// Angles are measured in radians, clockwise when looking along the rotation axis toward the origin.
 	inline __m256d quaternionRotationNormal( __m256d normalAxis, double angle )
 	{
 		// Create a vector with [ sin, sin, sin, cos ]
@@ -37,7 +42,8 @@ namespace AvxMath
 		return _mm256_mul_pd( normalAxis, q );
 	}
 
-	// Create rotation quaternion from axis of rotation; angles are measured clockwise when looking along the rotation axis toward the origin.
+	// Create rotation quaternion from axis of rotation, not necessarily normalized.
+	// Angles are measured in radians, clockwise when looking along the rotation axis toward the origin.
 	inline __m256d quaternionRotationAxis( __m256d normalAxis, double angle )
 	{
 		return quaternionRotationNormal( vector3Normalize( normalAxis ), angle );
