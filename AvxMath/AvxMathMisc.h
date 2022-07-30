@@ -174,11 +174,11 @@ namespace AvxMath
 	// Broadcast Y lane into all 4 lanes
 	inline __m256d vectorSplatY( __m256d vec )
 	{
+#if _AM_AVX2_INTRINSICS_
+		return _mm256_permute4x64_pd( vec, _MM_SHUFFLE( 1, 1, 1, 1 ) );
+#else
 		__m128d low = low2( vec );
 		low = _mm_permute_pd( low, 0b11 );
-#if _AM_AVX2_INTRINSICS_
-		return _mm256_broadcastsd_pd( low );
-#else
 		return dup2( low );
 #endif
 	}

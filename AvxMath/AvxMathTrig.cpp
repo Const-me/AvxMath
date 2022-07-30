@@ -66,23 +66,24 @@ namespace AvxMath
 		const __m256d x2 = _mm256_mul_pd( x, x );
 
 		const double* const coeffs = (const double*)g_cosSinCoefficients.data();
-		// Compute polynomial approximation of sine
-		__m256d vec = vectorMultiplyAdd( x2, broadcast( coeffs[ 9 ] ), broadcast( coeffs[ 7 ] ) );
-		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 5 ] ) );
-		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 3 ] ) );
-		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 1 ] ) );
-		vec = vectorMultiplyAdd( vec, x2, one );
-		vec = _mm256_mul_pd( vec, x );
-		sin = vec;
+		// Compute both polynomial approximations
+		__m256d rs = vectorMultiplyAdd( x2, broadcast( coeffs[ 9 ] ), broadcast( coeffs[ 7 ] ) );
+		__m256d rc = vectorMultiplyAdd( x2, broadcast( coeffs[ 8 ] ), broadcast( coeffs[ 6 ] ) );
 
-		// Compute polynomial approximation of cosine
-		vec = vectorMultiplyAdd( x2, broadcast( coeffs[ 8 ] ), broadcast( coeffs[ 6 ] ) );
-		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 4 ] ) );
-		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 2 ] ) );
-		vec = vectorMultiplyAdd( vec, x2, broadcast( coeffs[ 0 ] ) );
-		vec = vectorMultiplyAdd( vec, x2, one );
-		vec = _mm256_or_pd( vec, sign );
-		cos = vec;
+		rs = vectorMultiplyAdd( rs, x2, broadcast( coeffs[ 5 ] ) );
+		rc = vectorMultiplyAdd( rc, x2, broadcast( coeffs[ 4 ] ) );
+		
+		rs = vectorMultiplyAdd( rs, x2, broadcast( coeffs[ 3 ] ) );
+		rc = vectorMultiplyAdd( rc, x2, broadcast( coeffs[ 2 ] ) );
+		
+		rs = vectorMultiplyAdd( rs, x2, broadcast( coeffs[ 1 ] ) );
+		rc = vectorMultiplyAdd( rc, x2, broadcast( coeffs[ 0 ] ) );
+		
+		rs = vectorMultiplyAdd( rs, x2, one );
+		rc = vectorMultiplyAdd( rc, x2, one );
+		
+		sin = _mm256_mul_pd( rs, x );
+		cos = _mm256_or_pd( rc, sign );
 	}
 
 	__m256d vectorSin( __m256d x )
@@ -265,7 +266,7 @@ namespace AvxMath
 	{
 		const double mul0 = -424539.12324285670928;  // -135135 * Pi
 		const double div0 = -135135;                 // -135135
-		const double mul2 = 537183.74348619438457;   // 62370 * Pi^2
+		const double mul2 = 537183.74348619438457;   // 17325 * Pi^3
 		const double div2 = 615567.22649594329707;   // 62370 * Pi^2
 		const double mul4 = -115675.44084883638934;  // -378 * Pi^5
 		const double div4 = -306838.63675710767731;  // -3150 * Pi^4

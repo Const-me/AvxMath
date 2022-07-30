@@ -67,7 +67,6 @@ namespace AvxMath
 		__m256d Q0 = _mm256_mul_pd( P0, Y0 );
 		Q1 = _mm256_mul_pd( Q1, Y1 );
 		Q0 = _mm256_mul_pd( Q0, R0 );
-		__m256d Q = vectorMultiplyAdd( Q1, R1, Q0 );
-		return Q;
+		return vectorMultiplyAdd( Q1, R1, Q0 );
 	}
 }
