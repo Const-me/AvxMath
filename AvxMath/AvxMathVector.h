@@ -188,4 +188,20 @@ namespace AvxMath
 		}
 		return broadcast( g_misc.quietNaN );
 	}
+
+	// Clamp 4 values into [ 0 .. 1 ] interval
+	inline __m256d saturate( __m256d vec )
+	{
+		const __m256d one = broadcast( g_misc.one );
+		vec = _mm256_max_pd( vec, _mm256_setzero_pd() );
+		return _mm256_min_pd( vec, one );
+	}
+
+	// Clamp 2 values into [ 0 .. 1 ] interval
+	inline __m128d saturate( __m128d vec )
+	{
+		const __m128d one = broadcast2( g_misc.one );
+		vec = _mm_max_pd( vec, _mm_setzero_pd() );
+		return _mm_min_pd( vec, one );
+	}
 }
