@@ -303,6 +303,7 @@ namespace AvxMath
 		return _mm_cvtsd_f64( tmp );
 	}
 
+	// We want these magic numbers placed at adjacent memory addresses, that's why the structure
 	alignas( 16 ) static const struct
 	{
 		const double mul0 = -424539.12324285670928;  // -135135 * Pi
