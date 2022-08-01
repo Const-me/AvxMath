@@ -1,4 +1,4 @@
-// Miscellaneous routines to compare vectors for total order
+// Miscellaneous routines to compare vectors for total order, and compute hashes of vectors
 #pragma once
 
 namespace AvxMath
@@ -80,8 +80,17 @@ namespace AvxMath
 		return (bool)_mm_testz_si128( xx, xx );
 	}
 
-	// TODO: some hash function for these vectors, to use as keys in unordered containers in combination with bitwise equality implemented above
-	// Maybe rework Meow optimizing for latency with small things https://github.com/cmuratori/meow_hash
-	// Or maybe that helps somehow https://github.com/dragontamer/AESRand/blob/master/AESRand/AESRand/AESRand.cpp
-	// One thing to consider, std::unordered_map needs uint64_t hashes while CAtlMap wants uint32_t, ideally we'd need both versions.
+	// Hash 32 bytes in the vector into uint64_t
+	uint64_t vectorHash64( __m256d vec );
+	// Hash 24 bytes in the vector into uint64_t
+	uint64_t vector3Hash64( __m256d vec );
+	// Hash 16 bytes in the vector into uint64_t
+	uint64_t vectorHash64( __m128d vec );
+
+	// Hash 32 bytes in the vector into uint32_t
+	uint32_t vectorHash32( __m256d vec );
+	// Hash 24 bytes in the vector into uint32_t
+	uint32_t vector3Hash32( __m256d vec );
+	// Hash 16 bytes in the vector into uint32_t
+	uint32_t vectorHash32( __m128d vec );
 }

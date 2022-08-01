@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AvxMath.cpp" />
+    <ClCompile Include="AvxMath\AvxMathPredicates.cpp" />
     <ClCompile Include="AvxMath\AvxMathTrig.cpp" />
     <ClCompile Include="AvxMath\AvxMathMisc.cpp" />
     <ClCompile Include="AvxMath\AvxMathQuaternion.cpp" />
